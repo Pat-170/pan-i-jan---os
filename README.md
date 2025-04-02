@@ -16,3 +16,5 @@ To finally boot, you have to type:
 2. boot
 
 At this point you already booted your kernel.
+
+# 
