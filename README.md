@@ -7,3 +7,12 @@
 4. qemu-system-i386 -drive format=raw,file=myos.iso (INIT)
 
 # Recompile the files before initialization. (!!!)
+
+When you're already in the GNU, you can type "ls".
+The first one to appear (in this case it's "(hd0)") has the kernel.elf file inside.
+To finally boot, you have to type:
+
+1. multiboot (hd0)/kernel.elf
+2. boot
+
+At this point you already booted your kernel.
