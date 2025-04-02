@@ -1,15 +1,26 @@
-ENTRY(_start)
+ENTRY(kernel_main)
 
 SECTIONS
 {
     . = 1M; /* Load kernel at 1MB */
 
-    .text : ALIGN(4K)
+    .multiboot : ALIGN(4K) 
     {
-        *(.multiboot) /* Multiboot header */
-        *(.text) /* Code */
+        *(.multiboot) /* This makes sure the multiboot header goes at the start */
     }
 
-    .data : ALIGN(4K) { *(.data) }
-    .bss : ALIGN(4K) { *(.bss) }
+    .text : ALIGN(4K)
+    {
+        *(.text) /* Kernel code goes here */
+    }
+
+    .data : ALIGN(4K) 
+    {
+        *(.data) /* Data section (if any) */
+    }
+    
+    .bss : ALIGN(4K) 
+    {
+        *(.bss) /* Uninitialized data section */
+    }
 }
