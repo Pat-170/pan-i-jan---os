@@ -13,7 +13,8 @@ __attribute__((section(".multiboot"))) multiboot_header_t header = {
     -(0x1BADB002 + 0x00000003) // Checksum (magic + flags must equal zero)
 };
 
-typedef unsigned short uint16_t;
+#include "/home/kusn/code/kernel/undefined/video.h"
+#include "/home/kusn/code/kernel/undefined/idt.h"
 
 // VGA text mode memory starts at 0xB8000 <--- memorize it ~jakub
 #define VIDEO_MEMORY ((uint16_t*) 0xB8000)
@@ -22,31 +23,18 @@ typedef unsigned short uint16_t;
 
 __attribute__((section(".text"))) 
 
-void clear_screen() {
-    uint16_t blank = 0x0F00; // WHITE on BLACK 
+extern void clear_screen();
+extern void print_string();
+extern void idt_install();
+extern void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags);
 
-    for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++) {
-        VIDEO_MEMORY[i] = blank;
-    }
-}
-
-void print_string(const char* str) {
-    uint16_t* screen = VIDEO_MEMORY;
-    
-    while (*str) {
-        *screen = (0x0F << 8) | *str;
-        screen++;
-        str++;
-    }
-}
-
-void kernel_main() {
-    clear_screen();
-    print_string("Hello world!\n");
-
-    while (1) {}
-}
+extern idt_entry_t idt_entries[256];
+extern idt_ptr_t idt_ptr;
 
 void _start() {
-    kernel_main();
+    clear_screen();
+    idt_install();
+    __asm__ volatile ("sti");
+    
+    while (1) {}
 }
