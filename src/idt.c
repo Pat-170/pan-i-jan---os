@@ -1,4 +1,5 @@
-#include "/home/kusn/code/kernel/undefined/idt.h"
+#include "/home/kusn/code/kernel/headers/idt.h"
+
 
 idt_entry_t idt_entries[256];
 idt_ptr_t   idt_ptr;

@@ -1,7 +1,7 @@
 #ifndef IDT_H
 #define IDT_H
 
-#include "/home/kusn/code/kernel/undefined/types.h"
+#include "/home/kusn/code/kernel/headers/types.h"
 
 // Define the structure of an IDT entry (packed so no padding is added)
 typedef struct __attribute__((packed)) {

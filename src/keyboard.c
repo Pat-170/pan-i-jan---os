@@ -1,4 +1,4 @@
-#include "/home/kusn/code/kernel/undefined/io.h"
+#include "/home/kusn/code/kernel/headers/io.h"
 
 void keyboard_handler() {
     unsigned char scancode = inb(0x60);

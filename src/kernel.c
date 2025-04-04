@@ -13,8 +13,8 @@ __attribute__((section(".multiboot"))) multiboot_header_t header = {
     -(0x1BADB002 + 0x00000003) // Checksum (magic + flags must equal zero)
 };
 
-#include "/home/kusn/code/kernel/undefined/video.h"
-#include "/home/kusn/code/kernel/undefined/idt.h"
+#include "/home/kusn/code/kernel/headers/video.h"
+#include "/home/kusn/code/kernel/headers/idt.h"
 
 // VGA text mode memory starts at 0xB8000 <--- memorize it ~jakub
 #define VIDEO_MEMORY ((uint16_t*) 0xB8000)

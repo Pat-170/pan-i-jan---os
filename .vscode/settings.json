@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "video.h": "c"
+        "video.h": "c",
+        "idt.h": "c"
     }
 }
