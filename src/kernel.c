@@ -47,7 +47,7 @@ void _start() {
         print_string("System (GDT included) initialized!");
     }
 
-    //idt_install();
+    idt_install();
 
     
     while (1) {}
