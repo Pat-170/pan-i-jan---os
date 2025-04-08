@@ -25,6 +25,7 @@ __attribute__((section(".text")))
 
 extern void clear_screen();
 extern void print_string();
+extern void gdt_install();
 extern void idt_install();
 extern void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags);
 
@@ -33,8 +34,15 @@ extern idt_ptr_t idt_ptr;
 
 void _start() {
     clear_screen();
-    idt_install();
-    __asm__ volatile ("sti");
+
+    print_string("Welcome!\n");
+
+    gdt_install();
+    //idt_install();
+
+    //asm volatile("sti");
+
+    print_string("System (IDT & GDT included) initialized!");
     
     while (1) {}
 }
