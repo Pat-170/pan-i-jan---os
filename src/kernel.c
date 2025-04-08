@@ -25,24 +25,30 @@ __attribute__((section(".text")))
 
 extern void clear_screen();
 extern void print_string();
-extern void gdt_install();
+extern void protmodesetup();
 extern void idt_install();
 extern void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags);
 
 extern idt_entry_t idt_entries[256];
 extern idt_ptr_t idt_ptr;
 
+int is_protected_mode_set = 0;
+
 void _start() {
     clear_screen();
 
     print_string("Welcome!\n");
 
-    gdt_install();
+    if (!is_protected_mode_set) {
+        is_protected_mode_set = 1;
+        protmodesetup();
+        
+    } else {
+        print_string("System (GDT included) initialized!");
+    }
+
     //idt_install();
 
-    //asm volatile("sti");
-
-    print_string("System (IDT & GDT included) initialized!");
     
     while (1) {}
 }

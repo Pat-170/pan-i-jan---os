@@ -1,58 +1,53 @@
-section .data
-    gdt_start:
-        db 0, 0, 0, 0, 0, 0, 0, 0      
-        dw 0xFFFF, 0x0000, 0x9A, 0xCF   
-        dw 0xFFFF, 0x0000, 0x92, 0xCF   
-
-    gdt_end:
-
-    gdt_ptr:
-        dw gdt_end - gdt_start - 1     
-        dd gdt_start                  
 
 section .text
-    global gdt_install
+    global protmodesetup
+    extern _start
 
+protmodesetup:
+    cli
+
+    ; Enable A20 line here
+    in al, 0x92
+    or al, 2
+    out 0x92, al
+
+    xor ax, ax
+    mov ds, ax           ; Set DS to 0 for GDT setup
+
+    lgdt [GDT_DESC]      ; Load the GDT
+
+    ; Set CR0 to enable Protected Mode
+    mov eax, 0x1
+    mov cr0, eax
+
+    jmp GDT_kernelCodeSegment-GDT:protmode   
+
+[BITS 32]
+
+protmode:
+    mov ax, GDT_kernelDataSegment - GDT  
+    mov ds, ax
+    mov ss, ax
+    mov es, ax
+    mov esp, 0x90000  
     
-
-gdt_install:
-    call enable_a20
-
-    lgdt [gdt_ptr]              
-
-    mov eax, cr0
-    or eax, 1
-    mov cr0, eax                  
-
-    jmp protected_mode_entry
-
-enable_a20:
-    cli       
-
-    in al, 0x64                    
-    test al, 0x02
-
-    jnz wait_for_kbc_ready      
-    jmp enable_a20              
-
-wait_for_kbc_ready:
-    mov al, 0xD0  
-
-    out 0x64, al               
-    in al, 0x60                    
-    test al, 0x01
-
-    jz send_a20_command         
-
-send_a20_command:
-    mov al, 0xDF                
-    out 0x64, al               
-    sti                         
-
-    ret                         
+    jmp _start
 
 
-protected_mode_entry:
-    sti     
-    hlt                      
-    jmp $                         
+                
+align 4
+GDT_DESC:
+    dw GDT_END - GDT - 1           ; GDT size - 1
+    dd GDT                         ; GDT pointer
+
+align 16
+GDT:
+    GDT_NULL: dq 0x0000000000000000  ; Null descriptor
+    GDT_kernelCodeSegment: dq 0x00CF9A000000FFFF  ; Kernel Code Segment
+    GDT_kernelDataSegment: dq 0x00CF92000000FFFF  ; Kernel Data Segment
+    GDT_userCodeSegment: dq 0x00CFFA000000FFFF    ; User Code Segment
+    GDT_userDataSegment: dq 0x00CF92000000FFFF    ; User Data Segment
+    GDT_TSM: dq 0x0000000000000000               ; Task State Management
+    GDT_CS64: dq 0x00209A0000000000              ; 64-bit CS
+
+GDT_END:
