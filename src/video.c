@@ -5,7 +5,7 @@
 
 typedef unsigned short uint16_t;
 
-#include "/home/kusn/code/kernel/headers/video.h"
+#include "/home/kusn/code/kernel/headers/kernel.h"
 
 
 void clear_screen() {
