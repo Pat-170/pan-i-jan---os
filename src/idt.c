@@ -1,29 +1,26 @@
-#include "/home/kusn/code/kernel/headers/kernel.h"
+#include <stdint.h>
+#include "idt.h"
 
-idt_entry_t idt_entries[256];
-idt_ptr_t   idt_ptr;
+static struct idt_entry idt[256];
+static struct idt_ptr idtp;
 
-void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags) {
-    idt_entries[num].base_lo = base & 0xFFFF;
-    idt_entries[num].base_hi = (base >> 16) & 0xFFFF;
-    idt_entries[num].sel = sel;
-    idt_entries[num].always0 = 0;
-    idt_entries[num].flags = flags;
+void idt_set_gate(int n, uint32_t base, uint16_t sel, uint8_t flags){
+  idt[n].base_lo = base & 0xFFFF;
+  idt[n].sel     = sel;
+  idt[n].always0 = 0;
+  idt[n].flags   = flags;
+  idt[n].base_hi = (base >> 16) & 0xFFFF;
 }
 
-void idt_install() {
-    idt_ptr.limit = sizeof(idt_entry_t) * 256 - 1;
-    idt_ptr.base = (uint32_t)&idt_entries;
+extern void idt_load(struct idt_ptr*);
 
-    for (int i = 0; i < 256; i++) {
-        idt_entries[i].base_lo = 0;
-        idt_entries[i].base_hi = 0;
-        idt_entries[i].sel = 0;
-        idt_entries[i].always0 = 0;
-        idt_entries[i].flags = 0;
-    }
+void idt_init(void){
+  idtp.limit = sizeof(idt)-1;
+  idtp.base  = (uint32_t)&idt;
 
-    idt_set_gate(33, (uint32_t)keyboard_handler, 0x08, 0x8E);
+  for(int i=0;i<256;i++)
+    idt_set_gate(i, 0, 0x08, 0x8E); // placeholdery
 
-    idt_flush((uint32_t)&idt_ptr);
+  idt_load(&idtp);
+  __asm__ __volatile__("sti");
 }

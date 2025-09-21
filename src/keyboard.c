@@ -1,7 +1,3 @@
-#include "/home/kusn/code/kernel/headers/kernel.h"
-
-void keyboard_handler() {
-    unsigned char scancode = inb(0x60);
-
-    outb(0x20, 0x20);
-}
+#include "keyboard.h"
+// pełna obsługa IRQ1 będzie w Drop 3
+void keyboard_init(void) { /* TODO */ }
