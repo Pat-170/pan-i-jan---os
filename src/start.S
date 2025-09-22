@@ -1,23 +1,33 @@
-.intel_syntax noprefix
-.code32
+.set MULTIBOOT_MAGIC, 0x1BADB002
+.set MULTIBOOT_FLAGS, 0
+.set MULTIBOOT_CHECKSUM, -(MULTIBOOT_MAGIC + MULTIBOOT_FLAGS)
 
-/* Punkt wejścia dla linker.ld: _start */
+.section .multiboot
+    .long MULTIBOOT_MAGIC
+    .long MULTIBOOT_FLAGS
+    .long MULTIBOOT_CHECKSUM
+
+.section .text
 .global _start
 .extern kmain
 
+# Zmiennie globalne dla C
+.global multiboot_magic
+.global multiboot_info
+
 _start:
-    cli
-    /* ustaw 16-KB stosu w .bss */
-    mov esp, offset stack_top
+    # GRUB podaje:
+    # eax = magic, ebx = mbi ptr
+
+    movl %eax, multiboot_magic
+    movl %ebx, multiboot_info
+
     call kmain
 
-.hang:
-    hlt
-    jmp .hang
+1:  hlt
+    jmp 1b
 
-/* --- prosty stos w .bss --- */
-.section .bss
-.align 16
-stack_bottom:
-    .skip 16384            /* 16 KiB */
-stack_top:
+.section .data
+multiboot_magic: .long 0
+multiboot_info:  .long 0
+

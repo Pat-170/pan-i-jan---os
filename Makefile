@@ -10,7 +10,9 @@ LDFLAGS := -m elf_i386 -T linker.ld
 OBJ := src/multiboot_header.o src/start.o src/vga.o \
        src/gdt.o src/gdt_flush.o src/idt.o src/isr.o \
        src/pic.o src/pit.o src/keyboard.o \
+       src/mmap.o src/pmm.o src/paging.o \
        src/kmain.o
+
 
 
 all: kernel.elf
