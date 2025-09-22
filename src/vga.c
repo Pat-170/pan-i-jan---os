@@ -30,3 +30,10 @@ void vga_putc(char c){
   if(++col>=80) vga_newline();
 }
 void vga_write(const char* s){ while(*s) vga_putc(*s++); }
+void vga_write_dec(unsigned long n) {
+    if (n == 0) { vga_putc('0'); return; }
+    char buf[21];
+    int i = 0;
+    while (n > 0) { buf[i++] = '0' + (n % 10); n /= 10; }
+    while (i--) vga_putc(buf[i]);
+}

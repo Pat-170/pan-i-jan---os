@@ -24,3 +24,12 @@ void idt_init(void){
   idt_load(&idtp);
   __asm__ __volatile__("sti");
 }
+
+extern void irq0(void);
+extern void irq1(void);
+
+void idt_install_irqs(void){
+    idt_set_gate(32, (uint32_t)irq0, 0x08, 0x8E); // PIT
+    idt_set_gate(33, (uint32_t)irq1, 0x08, 0x8E); // Keyboard
+}
+
